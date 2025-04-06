@@ -43,7 +43,7 @@ class Find extends BaseUseCase
     /**
      * Retorna o cartão do usuário
      *
-     * @return string
+     * @return array
      */
     public function handle(): array
     {

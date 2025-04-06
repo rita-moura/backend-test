@@ -77,7 +77,7 @@ class Register extends BaseUseCase
             'id'  => $domain->getCardId()
         ];
 
-        $this->card = (new LinkCard($domain))->handle($account, $params);
+        $this->card = (new LinkCard())->handle($account, $params);
     }
 
     /**

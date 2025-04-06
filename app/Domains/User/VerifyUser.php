@@ -10,7 +10,7 @@ class VerifyUser extends BaseDomain
     /**
      * Valida se o usuário existe
      *
-     * @param array|null $User
+     * @param array|null $user
      * @throws InternalErrorException
      */
     private function existUser(?array $user): void
