@@ -6,6 +6,7 @@ use Throwable;
 use App\UseCases\BaseUseCase;
 use App\Domains\Company\Create as CreateDomain;
 use App\Repositories\Company\Create as CreateRepository;
+use App\Repositories\Company\CanUseDocumentNumber;
 
 class Create extends BaseUseCase
 {
@@ -35,10 +36,12 @@ class Create extends BaseUseCase
         $this->name           = $name;
         $this->documentNumber = $documentNumber;
     }
+    
 
     public function handle(): array
     {
-        $domain = (new CreateDomain($this->name, $this->documentNumber))->handle();
+        $documentIsValid = (new CanUseDocumentNumber($this->documentNumber))->handle();
+        $domain = (new CreateDomain($this->name, $this->documentNumber))->handle($documentIsValid);
 
         $data = [
             'name'            => $domain->getName(),

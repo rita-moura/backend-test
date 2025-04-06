@@ -49,9 +49,9 @@ class Create extends BaseDomain
     /**
      * Documento de empresa deve ser único no sistema
      */
-    protected function checkDocumentNumber()
+    protected function checkDocumentNumber($documentIsvalid)
     {
-        if (!(new CanUseDocumentNumber($this->documentNumber))->handle()) {
+        if (!$documentIsvalid) {
             throw new InternalErrorException(
                 'Não é possível adicionar o CNPJ informado',
                 0
@@ -64,9 +64,9 @@ class Create extends BaseDomain
      *
      * @return self
      */
-    public function handle(): self
+    public function handle($documentIsvalid): self
     {
-        $this->checkDocumentNumber();
+        $this->checkDocumentNumber($documentIsvalid);
 
         return $this;
     }

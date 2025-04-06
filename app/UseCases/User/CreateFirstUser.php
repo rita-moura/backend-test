@@ -10,6 +10,8 @@ use App\UseCases\Params\User\CreateFirstUserParams;
 use App\Domains\Company\Create as CreateCompanyDomain;
 use App\Repositories\User\Create as CreateUserRepository;
 use App\Repositories\Company\Create as CreateCompanyRepository;
+use App\Repositories\Company\CanUseDocumentNumber;
+
 
 class CreateFirstUser extends BaseUseCase
 {
@@ -52,10 +54,12 @@ class CreateFirstUser extends BaseUseCase
      */
     protected function validateCompany(): CreateCompanyDomain
     {
+        $documentIsValid = (new CanUseDocumentNumber($this->params->companyDocumentNumber))->handle();
+
         return (new CreateCompanyDomain(
             $this->params->companyName,
             $this->params->companyDocumentNumber
-        ))->handle();
+        ))->handle($documentIsValid);
     }
 
     /**
