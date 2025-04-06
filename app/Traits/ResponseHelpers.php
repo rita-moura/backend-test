@@ -79,6 +79,6 @@ trait ResponseHelpers
             401
         );
 
-        return response()->json($defaultResponse->toArray(), $defaultResponse->code);
+        return response()->json($defaultResponse->toArray(), $defaultResponse->getCode());
     }
 }

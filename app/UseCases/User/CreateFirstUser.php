@@ -90,8 +90,8 @@ class CreateFirstUser extends BaseUseCase
      */
     protected function validateUser(): CreateUserDomain
     {
-        $isUniqueEmail = (new CanUseEmail($this->params->email))->handle();
-        $isUniqueDocument = (new CanUseUnique($this->params->userDocumentNumber))->handle();
+        $isUniqueEmail = (new CanUseEmail($this->params->getEmail()))->handle();
+        $isUniqueDocument = (new CanUseUnique($this->params->getUserDocumentNumber()))->handle();
 
         return (new CreateUserDomain(
             $this->company['id'],

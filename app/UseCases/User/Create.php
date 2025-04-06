@@ -37,8 +37,8 @@ class Create extends BaseUseCase
      */
     protected function validateUser(): CreateDomain
     {
-        $isUniqueEmail = (new CanUseEmail($this->params->email))->handle();
-        $isUniqueDocument = (new CanUseDocumentNumber($this->params->documentNumber))->handle();
+        $isUniqueEmail = (new CanUseEmail($this->params->getEmail()))->handle();
+        $isUniqueDocument = (new CanUseDocumentNumber($this->params->getDocumentNumber()))->handle();
 
         return (new CreateDomain(
             $this->params->getCompanyId(),

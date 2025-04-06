@@ -55,6 +55,16 @@ class DefaultResponse
     }
 
     /**
+     * Get the HTTP status code for the response.
+     *
+     * @return int
+     */
+    public function getCode(): int
+    {
+        return $this->parameters['code'];
+    }
+
+    /**
      * Retorna o array de parametros dessa classe
      *
      * @return array

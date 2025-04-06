@@ -52,9 +52,8 @@ class Paginator extends LengthAwarePaginator
      * Cria uma nova instancia de paginação a partir de um LengthAwarePaginator
      *
      * @param  LengthAwarePaginator $paginator
-     * @param  string|null          $order
      *
-     * @return void
+     * @return self
      */
     public static function fromLengthAwarePaginator(LengthAwarePaginator $paginator)
     {
