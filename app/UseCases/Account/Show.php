@@ -4,6 +4,8 @@ namespace App\UseCases\Account;
 
 use Throwable;
 use App\UseCases\BaseUseCase;
+use App\Domains\Account\VerifyAccount;
+use App\Repositories\Account\FindByUser;
 use App\Integrations\Banking\Account\Find;
 
 class Show extends BaseUseCase
@@ -34,7 +36,11 @@ class Show extends BaseUseCase
      */
     protected function find(): void
     {
-        $this->account = (new Find($this->userId))->handle();
+        $account = (new FindByUser($this->userId))->handle() ?? null;
+
+        (new VerifyAccount())->handle($account);
+
+        $this->account = (new Find($this->userId))->handle($account);
     }
 
     /**

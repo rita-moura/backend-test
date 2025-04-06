@@ -4,6 +4,7 @@ namespace App\UseCases\Account;
 
 use Throwable;
 use App\UseCases\BaseUseCase;
+use App\Domains\User\VerifyUser;
 use App\Repositories\User\Find;
 use App\Repositories\Account\Create;
 use App\Exceptions\InternalErrorException;
@@ -53,12 +54,8 @@ class Register extends BaseUseCase
     protected function findUser(): void
     {
         $user = (new Find($this->userId, $this->companyId))->handle();
-        if (is_null($user)) {
-            throw new InternalErrorException(
-                'USER_NOT_FOUND',
-                146001001
-            );
-        }
+
+        (new VerifyUser())->handle($user);
 
         $this->user = $user;
     }

@@ -2,28 +2,28 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use App\UseCases\User\show;
 use App\UseCases\User\Index;
 use App\UseCases\User\Login;
 use App\UseCases\User\Create;
 use App\UseCases\User\Update;
-use Illuminate\Http\JsonResponse;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
+use App\UseCases\Params\User\CreateParams;
+use App\UseCases\Params\User\UpdateParams;
+use App\UseCases\Params\User\CreateFirstUserParams;
 use App\UseCases\User\CreateFirstUser;
+use App\Http\Controllers\Controller;
 use App\Http\Responses\DefaultResponse;
 use App\Http\Requests\User\IndexRequest;
 use App\Http\Requests\User\CreateRequest;
 use App\Http\Requests\User\UpdateRequest;
+use App\Http\Requests\User\RegisterRequest;
 use App\Http\Resources\User\ShowResource;
 use App\Http\Resources\User\LoginResource;
-use App\UseCases\Params\User\CreateParams;
-use App\UseCases\Params\User\UpdateParams;
-use App\Http\Requests\User\RegisterRequest;
 use App\Http\Resources\User\CreateResource;
 use App\Http\Resources\User\UpdateResource;
 use App\Http\Resources\User\RegisterResource;
-use App\UseCases\Params\User\CreateFirstUserParams;
 use App\Http\Resources\User\IndexCollectionResource;
 
 class UserController extends Controller

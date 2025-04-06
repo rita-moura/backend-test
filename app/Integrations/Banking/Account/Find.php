@@ -3,7 +3,6 @@
 namespace App\Integrations\Banking\Account;
 
 use App\Integrations\Banking\Gateway;
-use App\Repositories\Account\FindByUser;
 use App\Exceptions\InternalErrorException;
 
 class Find extends Gateway
@@ -32,17 +31,8 @@ class Find extends Gateway
      *
      * @return void
      */
-    protected function findAccountData(): void
+    protected function findAccountData($account): void
     {
-        $account = (new FindByUser($this->userId))->handle();
-
-        if (is_null($account)) {
-            throw new InternalErrorException(
-                'ACCOUNT_NOT_FOUND',
-                161001001
-            );
-        }
-
         $this->externalId = $account['external_id'];
     }
 
@@ -61,9 +51,9 @@ class Find extends Gateway
      *
      * @return array
      */
-    public function handle(): array
+    public function handle($account): array
     {
-        $this->findAccountData();
+        $this->findAccountData($account);
         $url = $this->requestUrl();
 
         $request = $this->sendRequest(
