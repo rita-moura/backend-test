@@ -34,14 +34,15 @@ trait Logger
      * @param string         $action           Usado no filtro, texto simples
      * @param mixed          $value            Conteúdo do log
      * @param Throwable|null $error            Erro ocorrido (caso seja um log de erro)
-     * @param string|null    $userId           ID do usuário, usuário logado do JWT caso null
-     * @param string|null    $companyId        ID da empresa, empresa do usuário logado do JWT caso null
+     * @param string|null    $idUser           ID do usuário, usuário logado do JWT caso null
+     * @param string|null    $idCompany        ID da empresa, empresa do usuário logado do JWT caso null
      * @param string|null    $entityId         ID da entidade
      * @param string|null    $entity           Entidade
      * @param string         $logLevel         Nivel do log: DEBUG/ERROR/INFO/CRITICAL/WARNING
      * @param string         $logType          Tipo de log: SERVER/AUDIT
      * @param Carbon|null    $requestDatetime  Datetime do ínicio de uma request
      * @param Carbon|null    $responseDatetime Datetime da response de uma request
+     * @param bool           $includeAuthContext se for necessaria autenticação
      *
      * @return array
      */
@@ -57,7 +58,8 @@ trait Logger
         string $logLevel = 'DEBUG',
         string $logType = 'SERVER',
         Carbon $requestDatetime = null,
-        Carbon $responseDatetime = null
+        Carbon $responseDatetime = null,
+        bool $includeAuthContext = false
     ): array {
         try {
             $value    = is_array($value) ? $value : [$value];
@@ -69,7 +71,7 @@ trait Logger
                 $value    = array_merge($value, compact('errorLog'));
             }
 
-            $getUserResponse = $this->getUserFromJwt();
+            $getUserResponse = $this->getAuthContext();
             $requestDuration = null;
 
             if ($requestDatetime && $responseDatetime) {
@@ -117,6 +119,58 @@ trait Logger
             'message' => 'Log feito com sucesso',
             'data'    => $context,
             'uuid'    => $uuid,
+        ];
+    }
+
+    /**
+     * Verifica se é necessario conferir autenticação de usuario
+     *
+     * @param boolean $includeAuthContext
+     * @return array
+     */
+    protected function getAuthData(bool $includeAuthContext): array 
+    {
+        return $includeAuthContext 
+            ? $this->getAuthContext() 
+            : $this->getEmptyAuthContext();
+    }
+
+     /**
+      * Obtém informações do usuário autenticado
+      *
+      * @return array
+      */
+    protected function getAuthContext(): array
+    {
+        if (!app()->bound('auth') || !auth()->check()) {
+            return $this->getEmptyAuthContext();
+        }
+
+        try {
+            $user = auth()->user();
+            return [
+                'user_id' => $user->getAuthIdentifier(),
+                'company_id' => $user->company_id ?? null,
+                'admin_user_id' => $user->admin_user_id ?? null,
+                'auth_at' => now()->toIso8601String()
+            ];
+        } catch (\Throwable $e) {
+            return $this->getEmptyAuthContext();
+        }
+    }
+
+    /**
+     * Retorna contexto vazio padronizado
+     *
+     * @return array
+     */
+    private function getEmptyAuthContext(): array
+    {
+        return [
+            'user_id' => null,
+            'company_id' => null,
+            'admin_user_id' => null,
+            'auth_at' => null
         ];
     }
 

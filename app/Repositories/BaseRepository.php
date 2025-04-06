@@ -126,8 +126,9 @@ abstract class BaseRepository implements BaseRepositoryInterface
     public function first(array $columns = ['*']): array|null
     {
         $result = $this->builder
-            ->first($columns)
-            ?->toArray();
+            ->first($columns);
+
+        $result = $result !== null ? $result->toArray() : null;
 
         $this->newBuilder();
 
@@ -145,7 +146,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
     {
         $result = $this->builder
             ->firstOrFail($columns)
-            ?->toArray();
+            ->toArray();
 
         $this->newBuilder();
 
@@ -184,7 +185,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
         int|null $perPage = null,
         int|null $page = null
     ): LengthAwarePaginator {
-        $perPage = $perPage ?? config('app.limit_pagination');
+        $perPage = $perPage ?? (config('app.limit_pagination')); // Default to 15 if not set
 
         $result = $this->builder
             ->paginate(
@@ -290,7 +291,11 @@ abstract class BaseRepository implements BaseRepositoryInterface
     public function restoreOrCreate(array $matchingAttributes, array $values): array
     {
         try {
-            $deleted = $this->instance::withTrashed()->where($matchingAttributes)->first();
+            if (method_exists($this->instance, 'withTrashed')) {
+                $deleted = $this->model::withTrashed()->where($matchingAttributes)->first();
+            } else {
+                $deleted = $this->instance::where($matchingAttributes)->first();
+            }
             if (!is_null($deleted)) {
                 $deleted->restore();
                 $deleted->update($values);

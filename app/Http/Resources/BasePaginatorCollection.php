@@ -7,11 +7,29 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class BasePaginatorCollection extends ResourceCollection
 {
+    /**
+     * The order for the collection.
+     *
+     * @var string|null
+     */
+    protected $order;
+
     public function __construct($resource, string $order = null)
     {
+        $this->order = $order;
         $resource = Paginator::fromLengthAwarePaginator($resource);
 
         parent::__construct($resource);
+    }
+    
+    /**
+     * Retorna a ordem
+     *
+     * @return string|null
+     */
+    protected function getOrder()
+    {
+        return $this->order;
     }
 
     /**

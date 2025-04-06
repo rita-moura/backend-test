@@ -27,8 +27,9 @@ trait UuidAsPrimaryKey
         static::creating(function ($model) {
             $model->incrementing = false;
 
-            $model->attributes[$model->getKeyName()] = isset($model->attributes[$model->getKeyName()])
-                ? $model->attributes[$model->getKeyName()]
+            $keyName = method_exists($model, 'getKeyName') ? $model->getKeyName() : 'id';
+            $model->attributes[$keyName] = isset($model->attributes[$keyName])
+                ? $model->attributes[$keyName]
                 : Uuid::uuid4()->toString();
         });
     }
