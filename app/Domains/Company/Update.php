@@ -27,6 +27,25 @@ class Update extends BaseDomain
     }
 
     /**
+     * Retorna o id da empresa
+     *
+     * @return string
+     */
+    public function getId() {
+        return $this->id;
+    }
+
+    /**
+     * Retorna o nome da empresa
+     *
+     * @return string
+     */
+    public function getName() {
+        return $this->name;
+    }
+
+
+    /**
      * Checa se é possível modificar a empresa
      *
      * @return self

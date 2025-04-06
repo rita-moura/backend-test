@@ -67,7 +67,13 @@ class CreateFirstUser extends BaseUseCase
      */
     protected function createCompany(CreateCompanyDomain $domain): void
     {
-        $this->company = (new CreateCompanyRepository($domain))->handle();
+
+        $data = [
+            'name'            => $domain->getName(),
+            'document_number' => $domain->getDocumentNumber(),
+        ];
+
+        $this->company = (new CreateCompanyRepository())->handle($data);
     }
 
     /**

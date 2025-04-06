@@ -4,7 +4,6 @@ namespace App\Domains\Company;
 
 use App\Domains\BaseDomain;
 use App\Exceptions\InternalErrorException;
-use App\Repositories\Company\CanUseDocumentNumber;
 
 class Create extends BaseDomain
 {
@@ -26,6 +25,25 @@ class Create extends BaseDomain
     {
         $this->name           = $name;
         $this->documentNumber = $documentNumber;
+    }
+
+
+    /**
+     * retona o nome da empresa
+     *
+     * @return string
+     */
+    public function getName(): string {
+        return $this->name;
+    }
+
+    /**
+     * retona o CNPJ da empresa
+     *
+     * @return string
+     */
+    public function getDocumentNumber(): string {
+        return $this->documentNumber;
     }
 
     /**
