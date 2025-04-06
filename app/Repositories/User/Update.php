@@ -4,16 +4,9 @@ namespace App\Repositories\User;
 
 use App\Models\User;
 use App\Repositories\BaseRepository;
-use App\Domains\User\Update as UpdateDomain;
 
 class Update extends BaseRepository
 {
-    /**
-     * Parâmetros de criação de usuário
-     *
-     * @var UpdateDomain
-     */
-    protected UpdateDomain $domain;
 
     /**
      * Setar a model do usuário
@@ -25,32 +18,22 @@ class Update extends BaseRepository
         $this->model = User::class;
     }
 
-    public function __construct(UpdateDomain $domain)
+    public function __construct()
     {
-        $this->domain = $domain;
-
         parent::__construct();
     }
 
     /**
      * Modificação de usuário
      *
+     * @param array $params
      * @return array
      */
-    public function handle(): array
+    public function handle($id, $params): array
     {
-        $this->builder->where('company_id', $this->domain->companyId);
-
         return $this->update(
-            $this->domain->id,
-            array_filter(
-                [
-                    'name'     => $this->domain->name,
-                    'email'    => $this->domain->email,
-                    'password' => $this->domain->password,
-                    'type'     => $this->domain->type,
-                ]
-            )
+            $id,
+            array_filter($params)
         );
     }
 }

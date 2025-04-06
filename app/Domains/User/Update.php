@@ -4,7 +4,6 @@ namespace App\Domains\User;
 
 use App\Domains\BaseDomain;
 use Illuminate\Support\Facades\Hash;
-use App\Repositories\User\CanUseEmail;
 use App\Exceptions\InternalErrorException;
 
 class Update extends BaseDomain
@@ -69,6 +68,68 @@ class Update extends BaseDomain
     }
 
     /**
+     * Id do usuário
+     *
+     * @return string
+     */
+    public function getId(): string
+    {
+        return $this->id;
+    }
+
+    /**
+     * Empresa
+     *
+     * @return string
+     */
+    public function getCompanyId(): string
+    {
+        return $this->companyId;
+    }
+
+
+    /**
+     * Nome da empresa
+     *
+     * @return string|null
+     */
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+
+    /**
+     * Email
+     *
+     * @return string|null
+     */
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    /**
+     * Senha
+     *
+     * @return string|null
+     */
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    /**
+     * Tipo
+     *
+     * @return string|null
+     */
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    /**
      * Encripta a senha
      *
      * @param string|null $password
@@ -85,12 +146,12 @@ class Update extends BaseDomain
      *
      * @return void
      */
-    protected function checkEmail(): void
+    protected function checkEmail($isUniqueEmail): void
     {
         if (is_null($this->email)) {
             return;
         }
-        if (!(new CanUseEmail($this->email))->handle()) {
+        if (!$isUniqueEmail) {
             throw new InternalErrorException(
                 'Não é possível adicionar o E-mail informado',
                 0
@@ -121,9 +182,9 @@ class Update extends BaseDomain
      *
      * @return self
      */
-    public function handle(): self
+    public function handle($isUniqueEmail): self
     {
-        $this->checkEmail();
+        $this->checkEmail($isUniqueEmail);
         $this->checkType();
 
         return $this;
