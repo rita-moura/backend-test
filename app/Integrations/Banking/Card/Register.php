@@ -4,9 +4,6 @@ namespace App\Integrations\Banking\Card;
 
 use App\Integrations\Banking\Gateway;
 use App\Exceptions\InternalErrorException;
-use App\Domains\Card\Register as RegisterDomain;
-use App\Repositories\Card\FindByUser as FindCardByUser;
-use App\Repositories\Account\FindByUser as FindAccountByUser;
 
 class Register extends Gateway
 {
@@ -24,26 +21,16 @@ class Register extends Gateway
      */
     protected string $externalAccountId;
 
-    /**
-     * Dados necessários para o registro do cartão
-     *
-     * @var RegisterDomain
-     */
-    protected RegisterDomain $domain;
 
-    public function __construct(RegisterDomain $domain)
-    {
-        $this->domain = $domain;
-    }
+    public function __construct() {}
 
     /**
      * Busca os dados de conta
      *
      * @return void
      */
-    protected function findAccountData(): void
+    protected function findAccountData($account): void
     {
-        $account = (new FindAccountByUser($this->domain->userId))->handle();
 
         if (is_null($account)) {
             throw new InternalErrorException(
@@ -60,9 +47,8 @@ class Register extends Gateway
      *
      * @return void
      */
-    protected function findCardData(): void
+    protected function findCardData($account): void
     {
-        $account = (new FindCardByUser($this->domain->userId))->handle();
 
         if (is_null($account)) {
             throw new InternalErrorException(
@@ -89,9 +75,10 @@ class Register extends Gateway
      *
      * @return array
      */
-    public function handle(): array
+    public function handle($account, array $params): array
     {
-        $this->findAccountData();
+        $this->findAccountData($account);
+        $this->findCardData($account);
 
         $url = $this->requestUrl();
 
@@ -99,10 +86,7 @@ class Register extends Gateway
             method: 'post',
             url:    $url,
             action: 'REGISTER_CARD',
-            params: [
-                'pin' => $this->domain->pin,
-                'id'  => $this->domain->cardId,
-            ]
+            params: $params
         );
 
         return $this->formatDetailsResponse($request);

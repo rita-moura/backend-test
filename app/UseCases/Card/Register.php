@@ -5,8 +5,12 @@ namespace App\UseCases\Card;
 use Throwable;
 use App\UseCases\BaseUseCase;
 use App\Repositories\Card\Create;
+use App\Repositories\Account\FindByUser;
+use App\Repositories\Card\CanUseExternalId;
 use App\Domains\Card\Register as RegisterDomain;
 use App\Integrations\Banking\Card\Register as LinkCard;
+use App\Integrations\Banking\Card\Find;
+
 
 class Register extends BaseUseCase
 {
@@ -52,7 +56,11 @@ class Register extends BaseUseCase
      */
     protected function checkIfCanRegister(): RegisterDomain
     {
-        return (new RegisterDomain($this->userId, $this->pin, $this->cardId))->handle();
+        $account = (new FindByUser($this->userId))->handle();
+        
+        $externalId = (new CanUseExternalId($this->cardId))->handle();
+        
+        return (new RegisterDomain($this->userId, $this->pin, $this->cardId))->handle($account, $externalId);
     }
 
     /**
@@ -62,7 +70,14 @@ class Register extends BaseUseCase
      */
     protected function register(RegisterDomain $domain): void
     {
-        $this->card = (new LinkCard($domain))->handle();
+        $account = (new FindByUser($this->userId))->handle();
+        
+        $params = [
+            'pin' => $domain->getPin(),
+            'id'  => $domain->getCardId()
+        ];
+
+        $this->card = (new LinkCard($domain))->handle($account, $params);
     }
 
     /**
@@ -72,7 +87,13 @@ class Register extends BaseUseCase
      */
     protected function store(RegisterDomain $domain): void
     {
-        (new Create($domain))->handle();
+        $data = [
+            'account_id' => $domain->getAccountId(),
+            'external_id' => $domain->getCardId(),
+            'status'      => 'ACTIVE',
+        ];
+
+        (new Create())->handle($data);
     }
 
     /**
@@ -80,6 +101,7 @@ class Register extends BaseUseCase
      */
     public function handle(): array
     {
+        $this->card = [];
         try {
             $domain = $this->checkIfCanRegister();
             $this->register($domain);

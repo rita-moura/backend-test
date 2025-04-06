@@ -3,9 +3,7 @@
 namespace App\Domains\Card;
 
 use App\Domains\BaseDomain;
-use App\Repositories\Account\FindByUser;
 use App\Exceptions\InternalErrorException;
-use App\Repositories\Card\CanUseExternalId;
 
 class Register extends BaseDomain
 {
@@ -45,13 +43,42 @@ class Register extends BaseDomain
     }
 
     /**
+     * Retorna o id do usuário
+     *
+     * @return string
+     */
+    public function getAccountId(): string
+    {
+        return $this->accountId;
+    }
+
+    /**
+     * Retorna o id do usuário
+     *
+     * @return string
+     */
+    public function getCardId(): string
+    {
+        return $this->cardId;
+    }
+
+    /**
+     * Retorna o pin do usuário
+     *
+     * @return string
+     */
+    public function getPin(): string
+    {
+        return $this->pin;
+    }
+
+    /**
      * Busca o id de conta
      *
      * @return void
      */
-    protected function findAccountId(): void
+    protected function findAccountId($account): void
     {
-        $account = (new FindByUser($this->userId))->handle();
 
         if (is_null($account)) {
             throw new InternalErrorException(
@@ -66,9 +93,9 @@ class Register extends BaseDomain
     /**
      * Cartão não pode já estar vinculado
      */
-    protected function checkExternalId()
+    protected function checkExternalId($externalId)
     {
-        if (!(new CanUseExternalId($this->cardId))->handle()) {
+        if (!$externalId) {
             throw new InternalErrorException(
                 'Não é possível vincular esse cartão',
                 0
@@ -81,10 +108,10 @@ class Register extends BaseDomain
      *
      * @return self
      */
-    public function handle(): self
+    public function handle($account, $externalId): self
     {
-        $this->findAccountId();
-        $this->checkExternalId();
+        $this->findAccountId($account);
+        $this->checkExternalId($externalId);
 
         return $this;
     }

@@ -4,10 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\UseCases\Card\Register;
+use App\UseCases\Card\Find;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Responses\DefaultResponse;
-use App\Integrations\Banking\Card\Find;
+
 
 class CardController extends Controller
 {
