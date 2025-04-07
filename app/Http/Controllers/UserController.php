@@ -40,12 +40,12 @@ class UserController extends Controller
     public function register(RegisterRequest $request): JsonResponse
     {
         $params = new CreateFirstUserParams(
-            $request->company_name,
-            $request->company_document_number,
-            $request->user_name,
-            $request->user_document_number,
-            $request->email,
-            $request->password
+            $request->input('company_name'),
+            $request->input('company_document_number'),
+            $request->input('user_name'),
+            $request->input('user_document_number'),
+            $request->input('email'),
+            $request->input('password')
         );
 
         $useCase  = new CreateFirstUser($params);
@@ -91,9 +91,9 @@ class UserController extends Controller
     {
         $response = (new Index(
             Auth::user()->company_id,
-            $request->name,
-            $request->email,
-            $request->status
+            $request->input('name'),
+            $request->input('email'),
+            $request->input('status')
         ))->handle();
 
         return $this->response(
@@ -132,11 +132,11 @@ class UserController extends Controller
     {
         $params = new CreateParams(
             Auth::user()->company_id,
-            $request->name,
-            $request->document_number,
-            $request->email,
-            $request->password,
-            $request->type
+            $request->input('name'),
+            $request->input('document_number'),
+            $request->input('email'),
+            $request->input('password'),
+            $request->input('type')
         );
 
         $response = (new Create($params))->handle();
@@ -160,10 +160,10 @@ class UserController extends Controller
         $params = new UpdateParams(
             $id,
             Auth::user()->company_id,
-            $request->name,
-            $request->email,
-            $request->password,
-            $request->type
+            $request->input('name'),
+            $request->input('email'),
+            $request->input('password'),
+            $request->input('type')
         );
 
         $response = (new Update($params))->handle();

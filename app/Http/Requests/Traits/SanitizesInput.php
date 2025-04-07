@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Traits;
 
 use Illuminate\Support\Arr;
+use Elegant\Sanitizer\Sanitizer;
 
 trait SanitizesInput
 {
@@ -53,14 +54,14 @@ trait SanitizesInput
     {
         $filters = Arr::dot(Arr::only(Arr::undot($filters), array_keys($this->input())));
 
-        $this->sanitizer = Sanitizer::make($this->input(), $filters);
-
+        $sanitizer = new Sanitizer($this->input(), $filters);
+        
         // Codigo para manter apenas os inputs pré existentes na request passados
         // pelo form, pois o sanitizer está criando as chaves dos inputs só
         // por existirem nas regras
         $keysBefore = array_keys($this->all());
-
-        $sanitizedInputs = $this->sanitizer->sanitize();
+        
+        $sanitizedInputs = $sanitizer->sanitize();
 
         $result = [];
 

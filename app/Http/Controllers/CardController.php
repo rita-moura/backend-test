@@ -37,7 +37,7 @@ class CardController extends Controller
      */
     public function register(string $userId, Request $request): JsonResponse
     {
-        $response = (new Register($userId, $request->pin, $request->card_id))->handle();
+        $response = (new Register($userId, $request->input('pin'), $request->input('card_id')))->handle();
 
         return $this->response(
             new DefaultResponse($response['data'])
