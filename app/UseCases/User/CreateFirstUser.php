@@ -9,7 +9,12 @@ use App\Repositories\Token\Create as CreateToken;
 use App\UseCases\Params\User\CreateFirstUserParams;
 use App\Domains\Company\Create as CreateCompanyDomain;
 use App\Repositories\User\Create as CreateUserRepository;
+use App\Repositories\User\CanUseDocumentNumber as CanUseUnique;
+use App\Repositories\User\CanUseEmail;
 use App\Repositories\Company\Create as CreateCompanyRepository;
+use App\Repositories\Company\CanUseDocumentNumber;
+
+
 
 class CreateFirstUser extends BaseUseCase
 {
@@ -52,10 +57,12 @@ class CreateFirstUser extends BaseUseCase
      */
     protected function validateCompany(): CreateCompanyDomain
     {
+        $documentIsValid = (new CanUseDocumentNumber($this->params->getCompanyDocumentNumber()))->handle();
+
         return (new CreateCompanyDomain(
-            $this->params->companyName,
-            $this->params->companyDocumentNumber
-        ))->handle();
+            $this->params->getCompanyName(),
+            $this->params->getCompanyDocumentNumber()
+        ))->handle($documentIsValid);
     }
 
     /**
@@ -67,7 +74,13 @@ class CreateFirstUser extends BaseUseCase
      */
     protected function createCompany(CreateCompanyDomain $domain): void
     {
-        $this->company = (new CreateCompanyRepository($domain))->handle();
+
+        $data = [
+            'name'            => $domain->getName(),
+            'document_number' => $domain->getDocumentNumber(),
+        ];
+
+        $this->company = (new CreateCompanyRepository())->handle($data);
     }
 
     /**
@@ -77,14 +90,17 @@ class CreateFirstUser extends BaseUseCase
      */
     protected function validateUser(): CreateUserDomain
     {
+        $isUniqueEmail = (new CanUseEmail($this->params->getEmail()))->handle();
+        $isUniqueDocument = (new CanUseUnique($this->params->getUserDocumentNumber()))->handle();
+
         return (new CreateUserDomain(
             $this->company['id'],
-            $this->params->userName,
-            $this->params->userDocumentNumber,
-            $this->params->email,
-            $this->params->password,
+            $this->params->getUserName(),
+            $this->params->getUserDocumentNumber(),
+            $this->params->getEmail(),
+            $this->params->getPassword(),
             'MANAGER'
-        ))->handle();
+        ))->handle($isUniqueEmail, $isUniqueDocument);
     }
 
     /**
@@ -96,7 +112,16 @@ class CreateFirstUser extends BaseUseCase
      */
     protected function createUser(CreateUserDomain $domain): void
     {
-        $this->user = (new CreateUserRepository($domain))->handle();
+        $params = [
+            'company_id'      => $domain->getCompanyId(),
+            'name'            => $domain->getName(),
+            'document_number' => $domain->getDocumentNumber(),
+            'email'           => $domain->getEmail(),
+            'password'        => $domain->getPassword(),
+            'type'            => $domain->getType(),
+        ];
+
+        $this->user = (new CreateUserRepository())->handle($params);
     }
 
     /**
@@ -117,8 +142,10 @@ class CreateFirstUser extends BaseUseCase
         try {
             $companyDomain = $this->validateCompany();
             $this->createCompany($companyDomain);
+
             $userDomain = $this->validateUser();
             $this->createUser($userDomain);
+
             $this->createToken();
         } catch (Throwable $th) {
             $this->defaultErrorHandling(

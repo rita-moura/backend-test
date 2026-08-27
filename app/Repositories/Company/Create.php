@@ -4,16 +4,9 @@ namespace App\Repositories\Company;
 
 use App\Models\Company;
 use App\Repositories\BaseRepository;
-use App\Domains\Company\Create as CreateDomain;
 
 class Create extends BaseRepository
 {
-    /**
-     * Dados para criação de empresa
-     *
-     * @var CreateDomain
-     */
-    protected CreateDomain $domain;
 
     /**
      * Setar a model da empresa
@@ -25,25 +18,19 @@ class Create extends BaseRepository
         $this->model = Company::class;
     }
 
-    public function __construct(CreateDomain $domain)
+    public function __construct()
     {
-        $this->domain = $domain;
-
         parent::__construct();
     }
 
     /**
      * Criação de empresa
      *
+     * @param array $data
      * @return array
      */
-    public function handle(): array
+    public function handle(array $data): array
     {
-        return $this->create(
-            [
-                'name'            => $this->domain->name,
-                'document_number' => $this->domain->documentNumber,
-            ]
-        );
+        return $this->create($data);
     }
 }

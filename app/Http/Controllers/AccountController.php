@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\JsonResponse;
 use App\UseCases\Account\Show;
 use App\UseCases\Account\Block;
 use App\UseCases\Account\Active;
-use Illuminate\Http\JsonResponse;
 use App\UseCases\Account\Register;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Responses\DefaultResponse;
 use App\Http\Resources\Account\ShowResource;
 

@@ -7,6 +7,8 @@ use App\UseCases\BaseUseCase;
 use App\UseCases\Params\User\CreateParams;
 use App\Domains\User\Create as CreateDomain;
 use App\Repositories\User\Create as CreateRepository;
+use App\Repositories\User\CanUseDocumentNumber;
+use App\Repositories\User\CanUseEmail;
 
 class Create extends BaseUseCase
 {
@@ -35,14 +37,17 @@ class Create extends BaseUseCase
      */
     protected function validateUser(): CreateDomain
     {
+        $isUniqueEmail = (new CanUseEmail($this->params->getEmail()))->handle();
+        $isUniqueDocument = (new CanUseDocumentNumber($this->params->getDocumentNumber()))->handle();
+
         return (new CreateDomain(
-            $this->params->companyId,
-            $this->params->name,
-            $this->params->documentNumber,
-            $this->params->email,
-            $this->params->password,
-            $this->params->type
-        ))->handle();
+            $this->params->getCompanyId(),
+            $this->params->getName(),
+            $this->params->getDocumentNumber(),
+            $this->params->getEmail(),
+            $this->params->getPassword(),
+            $this->params->getType(),
+        ))->handle($isUniqueEmail, $isUniqueDocument);
     }
 
     /**
@@ -54,7 +59,16 @@ class Create extends BaseUseCase
      */
     protected function createUser(CreateDomain $domain): void
     {
-        $this->user = (new CreateRepository($domain))->handle();
+        $params = [
+            'company_id'      => $domain->getCompanyId(),
+            'name'            => $domain->getName(),
+            'document_number' => $domain->getDocumentNumber(),
+            'email'           => $domain->getEmail(),
+            'password'        => $domain->getPassword(),
+            'type'            => $domain->getType(),
+        ];
+    
+        $this->user = (new CreateRepository())->handle($params);
     }
 
     /**

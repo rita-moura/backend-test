@@ -27,11 +27,27 @@ class RouteServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->configureRateLimiting();
+    
+        if ($this->app->routesAreCached()) {
+            $this->loadCachedRoutes();
+        } else {
+            $this->routes(function () {
+                Route::middleware('api')
+                    ->prefix('api')
+                    ->group(base_path('routes/api.php'));
+            });
+        }
+    }
 
-        $this->routes(function () {
-            Route::middleware('api')
-                ->prefix('api')
-                ->group(base_path('routes/api.php'));
+    /**
+     * load routes cached
+     *
+     * @return void
+     */
+    protected function loadCachedRoutes()
+    {
+        $this->app->booted(function () {
+            require $this->app->getCachedRoutesPath();
         });
     }
 

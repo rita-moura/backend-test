@@ -4,16 +4,9 @@ namespace App\Repositories\Company;
 
 use App\Models\Company;
 use App\Repositories\BaseRepository;
-use App\Domains\Company\Update as UpdateDomain;
 
 class Update extends BaseRepository
 {
-    /**
-     * Dados para modificação de empresa
-     *
-     * @var UpdateDomain
-     */
-    protected UpdateDomain $domain;
 
     /**
      * Setar a model da empresa
@@ -25,25 +18,20 @@ class Update extends BaseRepository
         $this->model = Company::class;
     }
 
-    public function __construct(UpdateDomain $domain)
+    public function __construct()
     {
-        $this->domain = $domain;
-
         parent::__construct();
     }
 
     /**
      * Modificação de empresa
      *
+     * @param string $id
+     * @param array $data
      * @return array
      */
-    public function handle(): array
+    public function handle(string $id, array $data): array
     {
-        return $this->update(
-            $this->domain->id,
-            [
-                'name' => $this->domain->name,
-            ]
-        );
+        return $this->update($id, $data);
     }
 }

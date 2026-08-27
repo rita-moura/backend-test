@@ -7,6 +7,8 @@ use App\UseCases\BaseUseCase;
 use App\UseCases\Params\User\UpdateParams;
 use App\Domains\User\Update as UpdateDomain;
 use App\Repositories\User\Update as UpdateRepository;
+use App\Repositories\User\CanUseEmail;
+
 
 class Update extends BaseUseCase
 {
@@ -35,14 +37,22 @@ class Update extends BaseUseCase
      */
     protected function validateUser(): UpdateDomain
     {
+    
+        if ($this->params->getEmail() !== null) {
+            $isUniqueEmail = (new CanUseEmail($this->params->getEmail()))->handle();
+        }
+        if ($this->params->getEmail() === null) {
+            $isUniqueEmail = null;
+        }
+
         return (new UpdateDomain(
-            $this->params->id,
-            $this->params->companyId,
-            $this->params->name,
-            $this->params->email,
-            $this->params->password,
-            $this->params->type
-        ))->handle();
+            $this->params->getId(),
+            $this->params->getCompanyId(),
+            $this->params->getName(),
+            $this->params->getEmail(),
+            $this->params->getPassword(),
+            $this->params->getType()
+        ))->handle($isUniqueEmail);
     }
 
     /**
@@ -54,7 +64,14 @@ class Update extends BaseUseCase
      */
     protected function updateUser(UpdateDomain $domain): void
     {
-        $this->user = (new UpdateRepository($domain))->handle();
+        $params = [
+            'name'     => $domain->getName(),
+            'email'    => $domain->getEmail(),
+            'password' => $domain->getPassword(),
+            'type'     => $domain->getType(),
+        ];
+
+        $this->user = (new UpdateRepository())->handle($domain->getId(), $params);
     }
 
     /**

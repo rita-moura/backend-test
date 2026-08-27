@@ -3,11 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\UseCases\Card\Register;
 use Illuminate\Http\JsonResponse;
+use App\UseCases\Card\Register;
+use App\UseCases\Card\Find;
 use App\Http\Controllers\Controller;
 use App\Http\Responses\DefaultResponse;
-use App\Integrations\Banking\Card\Find;
+
 
 class CardController extends Controller
 {
@@ -36,7 +37,7 @@ class CardController extends Controller
      */
     public function register(string $userId, Request $request): JsonResponse
     {
-        $response = (new Register($userId, $request->pin, $request->card_id))->handle();
+        $response = (new Register($userId, $request->input('pin'), $request->input('card_id')))->handle();
 
         return $this->response(
             new DefaultResponse($response['data'])

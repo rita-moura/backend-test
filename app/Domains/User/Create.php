@@ -4,9 +4,7 @@ namespace App\Domains\User;
 
 use App\Domains\BaseDomain;
 use Illuminate\Support\Facades\Hash;
-use App\Repositories\User\CanUseEmail;
 use App\Exceptions\InternalErrorException;
-use App\Repositories\User\CanUseDocumentNumber;
 
 class Create extends BaseDomain
 {
@@ -69,6 +67,67 @@ class Create extends BaseDomain
         $this->cryptPassword($password);
     }
 
+
+    /**
+     * Empresa
+     *
+     * @return string
+     */
+    public function getCompanyId(): string
+    {
+        return $this->companyId;
+    }
+
+    /**
+     * Nome
+     *
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * CPF
+     *
+     * @return string
+     */
+    public function getDocumentNumber(): string
+    {
+        return $this->documentNumber;
+    }
+
+    /**
+     * Email
+     *
+     * @return string
+     */
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
+
+    /**
+     * Senha
+     *
+     * @return string
+     */
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
+
+    /**
+     * Tipo
+     *
+     * @return string
+     */
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
     /**
      * Encripta a senha
      *
@@ -86,9 +145,9 @@ class Create extends BaseDomain
      *
      * @return void
      */
-    protected function checkEmail(): void
+    protected function checkEmail($isUniqueEmail): void
     {
-        if (!(new CanUseEmail($this->email))->handle()) {
+        if (!$isUniqueEmail) {
             throw new InternalErrorException(
                 'Não é possível adicionar o E-mail informado',
                 0
@@ -101,9 +160,9 @@ class Create extends BaseDomain
      *
      * @return void
      */
-    protected function checkDocumentNumber(): void
+    protected function checkDocumentNumber($isUniqueDocument): void
     {
-        if (!(new CanUseDocumentNumber($this->documentNumber))->handle()) {
+        if (!$isUniqueDocument) {
             throw new InternalErrorException(
                 'Não é possível adicionar o CPF informado',
                 0
@@ -131,10 +190,10 @@ class Create extends BaseDomain
      *
      * @return self
      */
-    public function handle(): self
+    public function handle($isUniqueEmail, $isUniqueDocument): self
     {
-        $this->checkEmail();
-        $this->checkDocumentNumber();
+        $this->checkEmail($isUniqueEmail);
+        $this->checkDocumentNumber($isUniqueDocument);
         $this->checkType();
 
         return $this;

@@ -4,8 +4,10 @@ namespace App\UseCases\Account;
 
 use Throwable;
 use App\UseCases\BaseUseCase;
+use App\Repositories\Account\FindByUser;
 use App\Repositories\Account\UpdateStatus as RepositoryUpdateStatus;
 use App\Integrations\Banking\Account\UpdateStatus as IntegrationUpdateStatus;
+use App\Domains\Account\VerifyAccount;
 
 class Active extends BaseUseCase
 {
@@ -45,7 +47,11 @@ class Active extends BaseUseCase
      */
     protected function updateStatus(): void
     {
-        $this->account = (new IntegrationUpdateStatus($this->userId, 'active'))->handle();
+        $account = (new FindByUser($this->userId))->handle() ?? null;
+
+        (new VerifyAccount())->handle($account);
+
+        $this->account = (new IntegrationUpdateStatus($this->userId, 'active'))->handle($account);
     }
 
     /**

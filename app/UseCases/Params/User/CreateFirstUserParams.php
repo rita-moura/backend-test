@@ -63,4 +63,64 @@ class CreateFirstUserParams extends BaseParams
         $this->email                 = $email;
         $this->password              = $password;
     }
+
+    /**
+     * Retorna o nome da empresa
+     *
+     * @return string
+     */
+    public function getCompanyName(): string
+    {
+        return $this->companyName;
+    }
+
+    /**
+     * Retorna o CNPJ da empresa
+     *
+     * @return string
+     */
+    public function getCompanyDocumentNumber(): string
+    {
+        return $this->companyDocumentNumber;
+    }
+
+    /**
+     * Retorna o nome do usuário
+     *
+     * @return string
+     */
+    public function getUserName(): string
+    {
+        return $this->userName;
+    }
+
+    /**
+     * Retorna o CPF do usuário
+     *
+     * @return string
+     */
+    public function getUserDocumentNumber(): string
+    {
+        return $this->userDocumentNumber;
+    }
+
+    /**
+     * Retorna o email
+     *
+     * @return string
+     */
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
+
+    /**
+     * Retorna a senha
+     *
+     * @return string
+     */
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
 }

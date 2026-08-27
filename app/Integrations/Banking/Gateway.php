@@ -279,7 +279,7 @@ class Gateway
             );
         }
 
-        $data = $responseCollect->except('error')->toArray();
+        $data = $responseCollect->except(['error'])->toArray();
 
         return [
             'data' => $data,

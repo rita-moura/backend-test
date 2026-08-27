@@ -4,7 +4,6 @@ namespace App\Domains\Company;
 
 use App\Domains\BaseDomain;
 use App\Exceptions\InternalErrorException;
-use App\Repositories\Company\CanUseDocumentNumber;
 
 class Create extends BaseDomain
 {
@@ -28,12 +27,31 @@ class Create extends BaseDomain
         $this->documentNumber = $documentNumber;
     }
 
+
+    /**
+     * retona o nome da empresa
+     *
+     * @return string
+     */
+    public function getName(): string {
+        return $this->name;
+    }
+
+    /**
+     * retona o CNPJ da empresa
+     *
+     * @return string
+     */
+    public function getDocumentNumber(): string {
+        return $this->documentNumber;
+    }
+
     /**
      * Documento de empresa deve ser único no sistema
      */
-    protected function checkDocumentNumber()
+    protected function checkDocumentNumber($documentIsvalid)
     {
-        if (!(new CanUseDocumentNumber($this->documentNumber))->handle()) {
+        if (!$documentIsvalid) {
             throw new InternalErrorException(
                 'Não é possível adicionar o CNPJ informado',
                 0
@@ -46,9 +64,9 @@ class Create extends BaseDomain
      *
      * @return self
      */
-    public function handle(): self
+    public function handle($documentIsvalid): self
     {
-        $this->checkDocumentNumber();
+        $this->checkDocumentNumber($documentIsvalid);
 
         return $this;
     }

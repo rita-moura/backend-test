@@ -72,7 +72,7 @@ class Kernel extends HttpKernel
      *
      * Forces the listed middleware to always be in the given order.
      *
-     * @var array
+     * @var array<string>
      */
     protected $middlewarePriority = [
         'auth',

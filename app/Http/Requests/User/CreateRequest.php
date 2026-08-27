@@ -3,9 +3,12 @@
 namespace App\Http\Requests\User;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\Traits\SanitizesInput;
 
 class CreateRequest extends FormRequest
 {
+    use SanitizesInput;
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -19,6 +22,23 @@ class CreateRequest extends FormRequest
             'email'           => 'required|email',
             'password'        => 'required',
             'type'            => 'required|in:USER,VIRTUAL,MANAGER'
+        ];
+    }
+
+    /**
+     * Define os filtros de sanitização para cada campo
+     *
+     * @return array
+     */
+    public function filters(): array
+    {
+        return [
+            'before' => [
+                'document_number' => 'trim|digit',
+                'name'            => 'trim|strip_tags',
+                'email'           => 'trim|lowercase',
+                'type'            => 'trim|uppercase'
+            ]
         ];
     }
 }

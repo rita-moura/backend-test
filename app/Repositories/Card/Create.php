@@ -3,17 +3,10 @@
 namespace App\Repositories\Card;
 
 use App\Models\Card;
-use App\Domains\Card\Register;
 use App\Repositories\BaseRepository;
 
 class Create extends BaseRepository
 {
-    /**
-     * Parâmetros de criação de cartão
-     *
-     * @var Register
-     */
-    protected Register $domain;
 
     /**
      * Setar a model do cartão
@@ -25,26 +18,19 @@ class Create extends BaseRepository
         $this->model = Card::class;
     }
 
-    public function __construct(Register $domain)
+    public function __construct()
     {
-        $this->domain = $domain;
-
         parent::__construct();
     }
 
     /**
-     * Criação de usuário
+     * Cria um cartão
      *
+     * @param array $data
      * @return array
      */
-    public function handle(): array
+    public function handle(array $data): array
     {
-        return $this->create(
-            [
-                'account_id'  => $this->domain->accountId,
-                'external_id' => $this->domain->cardId,
-                'status'      => 'ACTIVE',
-            ]
-        );
+        return $this->create($data);
     }
 }

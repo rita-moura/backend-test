@@ -63,4 +63,64 @@ class CreateParams extends BaseParams
         $this->password       = $password;
         $this->type           = $type;
     }
+
+    /**
+     * Função para retornar o id da empresa
+     *
+     * @return string
+     */
+    public function getCompanyId(): string
+    {
+        return $this->companyId;
+    }
+
+    /**
+     * Função para retornar o nome do usuário
+     *
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+    
+    /**
+     * Função para retornar o documento do usuário
+     *
+     * @return string
+     */
+    public function getDocumentNumber(): string
+    {
+        return $this->documentNumber;
+    }
+
+    /**
+     * Função para retornar o email do usuário
+     *
+     * @return string
+     */
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
+
+    /**
+     * Função para retornar a senha do usuário
+     *
+     * @return string
+     */
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
+
+    /**
+     * Função para retornar o tipo do usuário
+     *
+     * @return string
+     */
+    public function getType(): string
+    {
+        return $this->type;
+    }
 }
